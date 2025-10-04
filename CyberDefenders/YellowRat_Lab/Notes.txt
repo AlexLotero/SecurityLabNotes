@@ -1,0 +1,5 @@
+Malware analysis tools: VirusTotal and Hybrid Analysis (we are given the hash of the malware)
+
+- both have their strengths -- best used together
+- hybrid analysis includes a search function for "Extracted Strings" -- helpful in the case where you know what you may be looking for (e.g. ".dat")
+- malware family can be found with google search

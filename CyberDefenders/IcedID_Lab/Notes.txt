@@ -1,0 +1,4 @@
+1. - 3. Useful information available on VirusTotal: name of file associated with given hash, filename of GIF file that was deployed, domains from which the malware attempts to download the additional payload (the gif)
+4. In the "Relations" tab, review the domain details in VirusTotal for common registrars. - DNS registrar used by threat actor to host harmful content
+5. malpedia incudes an "Actor(s)" section to report the known threat actor, just had to search for "IcedID" name of the malware - https://malpedia.caad.fkie.fraunhofer.de/details/win.icedid
+6. MITRE ATT&CK Tactics and Techniques, Execution phase available in VirusTotal reveals "URLDownloadToFileA" Windows function used by the malware to fetch extra payloads - https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms775123(v=vs.85)

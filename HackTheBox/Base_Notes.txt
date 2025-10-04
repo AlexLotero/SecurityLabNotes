@@ -1,0 +1,4 @@
+- nmap -sV to view the open TCP ports on the server
+- navigating to the server's webpage and clicking the option for login reveals the relative path of the login page in the URL bar: login/login.php
+- manually setting the address to http://10.129.95.184/login/ reveals that there are 3 files in this folder, one of which is the swap file (.swp)
+- 

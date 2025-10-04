@@ -1,0 +1,9 @@
+Oski Lab
+
+-----------
+Tools Used
+-----------
+1. VirusTotal: for detailed breakdown of the malware (if specific malware already exists in their DB)
+2. AnyRun: for 'static' analysis of the malware itself (link was provided for this malware already plugged in to AnyRun)
+	-https://app.any.run/tasks/d55e2294-5377-4a45-b393-f5a8b20f7d44
+	-https://any.run/report/a040a0af8697e30506218103074c7d6ea77a84ba3ac1ee5efae20f15530a19bb/d55e2294-5377-4a45-b393-f5a8b20f7d44#Behavior

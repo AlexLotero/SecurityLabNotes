@@ -1,0 +1,6 @@
+- nmap scan to observe open ports
+- view page source to identify possible paths (/nibbleblog found in source of home page) or to identify the content management system (<meta name="generator" content="Nibbleblog"> found in source of nibbleblog page) ("CMS-specific meta tags, such as generator (e.g., <meta name="generator" content="WordPress 5.8">")
+- feroxbuster revealed the XML file containing the admin username (password is often the name of the HackTheBox lab) (feroxbuster -u http://10.10.10.75/nibbleblog/admin -w /usr/share/wordlists/dirb/common.txt -x xml --> http://10.10.10.75/nibbleblog/content/private/users.xml)
+- feroxbuster also revealed the location of the README, which includes the version of the Nibbleblog running, which can then be used to search for a vulnerability on exploit-db
+- exploit was a Metasploit module to gain php shell, only required username, password, uri directory, etc. Once inside, directory navigation to /home reveals the nibbler user, and a flag in their folder (shell command turns our meterpreter shell into an actual bash shell)
+- priv escalation by viewing that this user has sudo rights on monitor.sh, so we edit this file to simply have "bash -i" to create an interactive root shell when run with sudo

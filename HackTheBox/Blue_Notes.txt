@@ -1,0 +1,9 @@
+- nmap -sV 10.10.10.40 to check for open ports
+- the hostname of the system is also included at the bottom of that nmap scan: Service Info: Host: HARIS-PC; OS: Windows; CPE: cpe:/o:microsoft:windows
+- this scan also made it easy enough to guess the version of Windows (Windows 7) given the following output: 
+445/tcp   open  microsoft-ds Microsoft Windows 7 - 10 microsoft-ds (workgroup: WORKGROUP)
+- To view how many "SMB shares" are available on the system, we once again use nmap with a specific script for this purpose:
+nmap --script smb-enum-shares -p 445 10.10.10.40
+- a quick google search reveals the MS17-010 security bulletin regarding the RCE vulnerability in SMB
+- the WannaCry worm of May 2017 took advantage of this exact vulnerability
+- utilizing the exploit in Metasploit: use exploit/windows/smb/ms17_010_eternalblue with the required options set, to gain reverse shell as "nt authority\system" (getuid command) with access to both the Administrator and haris user's desktops

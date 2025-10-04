@@ -1,0 +1,11 @@
+*.zip
+*.ad1
+*.mem
+*.iso
+*.exe
+*.bin
+*.tar
+*.7z
+*.rar
+*.img
+.DS_Store

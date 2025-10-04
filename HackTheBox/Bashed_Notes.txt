@@ -1,0 +1,5 @@
+- nmap scan: to view open TCP ports (nmap -sT 10.10.10.68 -p 1-10000
+- feroxbuster: enumerate directories on a webserver, alternative to gobuster (feroxbuster -u http://10.10.10.68 -w /usr/share/wordlists/dirb/common.txt -x php)
+- phpbash.php gives a shell in the browser if we head to the path identified in the previous question (http://10.10.10.68/dev/phpbash.php), we can then run whoamito view user
+- sudo -l: can view what commands our current user can run as other users "scriptmanager NOPASSWD"
+- test.py being run from /scripts by root: change /scripts folder privileges, edit test.py to cat /root/file.txt > /tmp/output.txt

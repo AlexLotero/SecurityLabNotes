@@ -1,0 +1,8 @@
+> FTK Imager is an awesome tool for forensics using a system image (a .AD1 file in this case)
+	- FTK Imager is a forensic imaging and analysis tool designed to acquire, create forensic images, and perform detailed analysis of various types of digital media.
+> Autopsy Digital Forensics - the premier end-to-end open source digital forensics platform.
+> .bash_history file found in /root folder  <-- used to answer multiple quesitons
+> Attacker used binwalk - a firmware analysis tool
+> /var/log/auth.log showed commands for user to successfully gain root access
+
+

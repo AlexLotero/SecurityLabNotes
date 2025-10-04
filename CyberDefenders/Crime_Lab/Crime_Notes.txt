@@ -1,0 +1,4 @@
+Tool for analysis of Android phone:
+ALEAPP -- Android Logs Events And Protobuf Parser
+	- available at: https://github.com/abrignoni/ALEAPP
+	- downloaded and turned into an executable

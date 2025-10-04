@@ -1,0 +1,107 @@
+Original:
+
+.......
+...O...
+....O..
+.......
+OO.....
+OO.....
+
+
+
+
+Copy:
+
+OOOOOOO
+OOO.OOO
+OOOO.OO
+OOOOOOO
+..OOOOO
+..OOOOO
+
+
+6 7 10
+.......
+...O.O.
+ ....O..
+..O....
+OO...OO
+OO.O...
+
+
+
+Iteration:  2
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  3
+
+['OOO.O.O', 'OO.....', 'OO.....', '....O..', '.......', '.......']
+
+Iteration:  4
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  5
+
+['.......', '...O.O.', '...O.OO', '..O...O', 'OOOO.OO', 'OOOOOOO']
+
+Iteration:  6
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  7
+
+['OOO.O.O', 'OO.....', 'OO.....', '....O..', '.......', '.......']
+
+Iteration:  8
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  9
+
+['.......', '...O.O.', '...O.OO', '..O...O', 'OOOO.OO', 'OOOOOOO']
+
+Iteration:  10
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  11
+
+['OOO.O.O', 'OO.....', 'OO.....', '....O..', '.......', '.......']
+
+Iteration:  12
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  13
+
+['.......', '...O.O.', '...O.OO', '..O...O', 'OOOO.OO', 'OOOOOOO']
+
+Iteration:  14
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  15
+
+['OOO.O.O', 'OO.....', 'OO.....', '....O..', '.......', '.......']
+
+Iteration:  16
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  17
+
+['.......', '...O.O.', '...O.OO', '..O...O', 'OOOO.OO', 'OOOOOOO']
+
+Iteration:  18
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']
+
+Iteration:  19
+
+['OOO.O.O', 'OO.....', 'OO.....', '....O..', '.......', '.......']
+
+Iteration:  20
+
+['OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO']

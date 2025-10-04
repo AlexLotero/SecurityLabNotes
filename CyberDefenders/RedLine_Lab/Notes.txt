@@ -1,0 +1,9 @@
+Volatility 3 is the world's most widely used framework for extracting digital artifacts from volatile memory (RAM) samples.
+
+1. to find suspicious process (oneetx.exe): vol -f MemoryDump.mem windows.pstree
+2. to see the child process of the suspicious process SAME: vol -f MemoryDump.mem windows.pstree
+3. to see memory protection applied to the suspicious process' memory region: vol -f MemoryDump.mem windows.vadinfo --pid 5896	(pid of the suspicious process, found in 1.)
+4. "socks" = sockets, anytime you see the word. Thus, vol -f MemoryDump.mem windows.netstat shows the tun2socks.exe process (including is ID) when then find the parent process of that ID in vol -f MemoryDump.mem windows.pslist
+5. To find the attacker's IP, we look for any connections created by the already identified in 1. malicious process/application - vol -f .\MemoryDump.mem windows.netscan | grep "malicious.exe"
+6. Searching for the IP address found in 5. on virustotal, we find a link to the VirusTotal page for oneetx.exe, where we can find the URL of the PHP file that the attacker visitis under Behavior -> Network Communication -> Memory Pattern URLs
+7. vol -f .\MemoryDump.mem windows.filescan lists the file system, we can then copy and paste to notepad to search for oneetx.exe and find its location - grep "oneetx.exe" would ultimately be bettter

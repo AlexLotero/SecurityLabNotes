@@ -1,0 +1,4 @@
+1. unusual patterns or high-volume traffic from an IP is an indicator of malicious activity - in this case, the IP with high volume of traffic is the machine from which the attacker originally gained access.
+2. 
+
+138

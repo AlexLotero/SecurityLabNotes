@@ -1,0 +1,9 @@
+- nmap -sV 10.10.10.152 to view open ports and the services running on them
+- nmap -sV -sC 10.10.10.152: -sC enables the most common scripts, including one that detects that FTP has anonymous mode enabled (use "anonymous" as the username and anything as the email)
+- FTP as anonymous user (see above) and navigate to the disgnated folder to find the flag
+- a quick Google search reveals that the default path of the PRTG Network Monitor config file is C:\ProgramData\Paessler\PRTG Network Monitor
+- going to that file path via FTP reveals the backup file: PRTG Configuration.old.bak
+- the file is too big to download in FTPs default setting, so switching to binary mode (ftp> binary) allows us to download it with (get "PRTG Configuration.old.bak"). We then open with a text editor and search for the term "admin" to fins the prtgadmin username and password
+- examining that password "PrTg@dmin2018" we are meant to guess that when the system forced a password change that they moved to "PrTg@dmin2019"
+- PRTG Network Monitor version is displayed in the status bar (bottom left) when connection to your PRTG server with your internet browser (10.10.10.152:80)
+- a search for vulnerabilities in that version includes an RCE usable through Metasploit - punching in the correct options and exploiting gives us the shell as user SYSTEM with admin privileges (meterpreter > getuid) <-- to see which user we are in meterpreter shell

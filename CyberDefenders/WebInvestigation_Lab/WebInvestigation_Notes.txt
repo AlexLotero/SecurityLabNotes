@@ -1,0 +1,13 @@
+- identified the attacker IP by seeing which IP had a bunch of GET requests to the server
+- identified search.php as the exploited script, because after it first appears in the logs, we can see multiple successful search attempts 'using' that script
+- found the first SQLi request ("/search.php?search=book and 1=1; -- -") by finding the first backet that used the search.php script with SQLi,language (" and 1=1; -- -") in the search (decoded from "search=book%20and%201=1;%20--%20-"
+- found the complete request used to read the web server's available DBs ("/search.php?search=book' UNION ALL SELECT NULL,CONCAT(0x7178766271,JSON_ARRAYAGG(CONCAT_WS(0x7a76676a636b,schema_name)),0x7176706a71) FROM INFORMATION_SCHEMA.SCHEMATA-- -") by finding the first SQL 'request' that used "INFORMATION_SCHEMA.SCHEMATA"
+- found the table name containing the website users data by searching again through all of the SQL requests to find the one with the table titled "bookworld_db.customers" - immediately obvious that this is the table including users data
+- /admin/ directory is visible in later attacker activities (later in the capture file
+- to find the admin username and password combo used, we search for the "username" string to find the SQL request 'to list' the password of the "admin" user, the HTTP 200 OK response packet then contains the admin username and password
+- the malicious php script used by the attacker can be found by located the GET request that gets a file that the attacker put in the "/admin/uploads/" folder - the name is how we can draw this conclusion: attacker finds admin credentials, then later the admin user is attempting to get some weirdly named script that they uploaded = obvious what is going on
+
+
+Useful site for decoding URL encodings: https://www.url-encode-decode.com/
+
+search=book%20and%201=1;%20--%20-

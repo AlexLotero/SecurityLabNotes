@@ -1,0 +1,12 @@
+OpenAdmin
+- Gobuster: enumerate directories on a webserver (gobuster dir -u 10.10.10.171 -w /usr/share/wordlists/dirb/common.txt)
+- command to list all links on a given webpage, type into the dev tools console (JavaScript): urls = document.querySelectorAll('a'); for (url in urls) console.log(urls[url].href);   
+a shortened version: n=$$('a');for(u in n)console.log(n[u].href)
+credit to ElectroBit on stackoverflow
+- searchsploit to search for local exploits in Kali
+- (Debian/Ubuntu): On Debian-based systems, virtual host configurations are typically linked from sites-available to sites-enabled. You can list the enabled virtual hosts with: ls /etc/apache2/sites-enabled/ --> output included the folder it was hosted in, where we were able to dig around for a hardcoded password!
+- crackstation.net: online hash cracker, when john and hashcat weren't working
+- RSA private key cracking:  John the Ripper includes a script called ssh2john.py that converts password-protected SSH private keys (RSA/DSA) into a format John can process.
+python3 /usr/share/john/ssh2john.py private_key.pem > hashed_key.txt
+john --wordlist=/usr/share/wordlists/rockyou.txt hashed_key.txt
+

@@ -1,0 +1,6 @@
+- nmap scan to find open port(s)
+- nmap -sT -sV 10.10.10.95 scan to see what specific services are running on open TCP ports
+- browser to http://10.10.10.95:8080, to browse through the many links to find the relative path to the Web App Manager - actually, just a google found it as well
+- had to brute force username:password with list of defaults available online
+- Apache tomcat Web Application Manager allows for the upload and deployment of .war files
+- found a script online that created "wshell.war" a war file, that when deployed, allowed me to navigate the file system and find the flags

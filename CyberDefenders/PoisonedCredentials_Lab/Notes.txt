@@ -1,0 +1,6 @@
+- LLMNR enables the resolution of both IPv4 and IPv6 addresses into hostnames without any need for a DNS server on the local network
+- if a DNS request fails, a LLMNR query is mad e on the local network to resolve that request. 
+- LLMNR does not require authentication for those name resolutions, thus an attacker listening on the local network can respond to those queries with their own IP address -> LLMNR poisoning
+- the biggest help was to filter "ntlmssp" to see specifically the NTLM Auth Negotiations -- this was key 
+- helpful walkthrough: https://www.hackthebox.com/blog/llmnr-poisoning-attack-detection
+- kali tool for LLMNR poisoning: https://www.kali.org/tools/responder/

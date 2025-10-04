@@ -1,0 +1,16 @@
+Threat intelligence reports can provide insights into compromised software (3CX). Examples:
+- Mandiant
+- CrowdStrike
+- Zscaler - featured "Affected 3CX versions"
+- SentinelOne
+
+> MSI files contain metadata that includes their creation time. Used metadata2go.com metadata extractor
+> malicious DLLs dropped by the msi file reported on zscaler
+> googled "mitre attack dll loading" to find the MITRE Technique ID employed by the .msi files to load the malicious DLL
+> googled "ffmpeg.dll threat category" to find the threat category of the malicious DLLs - trojan+
+> googling "" reveals a write-up by Akshat Pradhan, Senior Engineer, Threat Research, Qualys about the 3CX Backdoored in Lazarus Campaign - including the MITRE ID for the virtualization evasion technique used, also available in ffmpeg.dll's hybrid-analysis page
+> That same write-up explains how the RC4 encryption alg. is used by the ffmpeg.dll file to decrypt the encrypted payload embedded in d3dcompiler_47.dll with the key "3jB(2bsG#@c7"
+> 3CX compromise linked to Lazarus group - North Korean hackers
+> Which hypervisor is targeted by the anti-analysis techniques in the ffmpeg.dll file? VMware - Operation Dream Job by Lazarus (found in Mitre Attack page for Virtualization/Sandbox Evasion: Time Based Evasion)
+
+

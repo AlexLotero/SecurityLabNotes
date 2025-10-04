@@ -1,0 +1,7 @@
+- "Malware Bazaar" (bazaar.abuse.ch) used in this case to find a YARA rule that detects the 'Redline Stealer' malware
+	> googled 'malware bazaar Varp0s' (the author)
+	> "MalwareBazaar is a platform from abuse.ch and Spamhaus, dedicated to sharing malware samples with the infosec community, antivirus vendors, and threat intelligence providers. Upload malware samples and explore the database for 	valuable intelligence. Set alerts to track newly observed malware, use APIs to seamlessly push or pull signals, and automate bulk queries. With this intelligence, gain insights into malware behavior, to help identify, track, and mitigate against malware and botnet-related cyber threats."
+- "Threat Fox" (threatfox.abuse.ch) used in this case to identify another alias for this malware
+	> searched the IP that the malware reached out to, in the ThreatFox database - Search: ioc:77.91.124.55:19071
+	> "ThreatFox is a platform from abuse.ch and Spamhaus dedicated to sharing indicators of compromise (IOCs) associated with malware, with the infosec community, AV vendors and cyber threat intelligence providers. Upload IOCs and explore the database for valuable intelligence. Use the APIs to seamlessly push and pull signals, and automate bulk queries. With this intelligence, gain insights into malware behavior, to help identify, track, and mitigate against malware and botnet-related cyber threats."
+- '.dll' search on hybrid-analysis revealed the dll utilized by the malware for priv. escalation

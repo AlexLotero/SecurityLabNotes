@@ -1,0 +1,5 @@
+- nmap -sV to view the open TCP ports
+- a quick google search reveals that the CVE id for a vulnerability in SMB allowing RCE was CVE-2008-4250
+- finding that exact CVE on rapid7 reveals the Metasploit module for it in exploit/windows/smb/ms08_067_netapi
+- utilizing the exploit in Metasploit: (use exploit/windows/smb/ms08_067_netapi) with the required options set, to gain reverse shell as "nt authority\system" (getuid command) with access to both the Administrator and john's desktops
+- another SMB vulnerability for RCE in 2017 can be found with a quick google search, CVE-2017-0143

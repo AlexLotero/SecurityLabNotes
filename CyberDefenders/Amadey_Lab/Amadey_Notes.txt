@@ -1,0 +1,15 @@
+- Volatility 3 is the world's most widely used framework for extracting digital artifacts from volatile memory (RAM) samples.
+Volatility commands used:
+	- vol -f “/path/to/file” windows.pstree ---- find unusual/malicious process (.exe)
+	- vol -f “/path/to/file” windows.cmdline --- find path to malicious exe
+	- vol -f “/path/to/file” windows.netscan --- find attempts to reach c2 server
+	- vol -f /home/ubuntu/Desktop/'Start here'/Artifacts/'Windows 7 x64-Snapshot4.vmem' windows.memmap.Memmap --pid 2748 --dump, then strings pid.2748.dmp | grep 'GET /' --- view all GET requests (to c2 server)
+	- python3 vol.py -f "/home/ubuntu/Desktop/Start here/Artifacts/Windows 7 x64-Snapshot4.vmem" windows.filescan | grep 'clip64' -- to see where the downloaded files were stored
+	- python3 vol.py -f "/home/ubuntu/Desktop/Start here/Artifacts/Windows 7 x64-Snapshot4.vmem" windows.pstree -- run again to see which child process is used to run the newly downloaded dll
+	- python3 vol.py -f "/home/ubuntu/Desktop/Start here/Artifacts/Windows 7 x64-Snapshot4.vmem" windows.filescan | grep 'lssass.exe' -- to see an additional location that the malware lives to ensure consistent presence
+
+- helpful Volatility cheatsheet: https://blog.onfvp.com/post/volatility-cheatsheet/
+
+
+windows.dumpfiles ‑‑pid 2748
+cred64 clip64

